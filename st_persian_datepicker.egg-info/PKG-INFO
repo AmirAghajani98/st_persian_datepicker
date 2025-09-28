@@ -1,0 +1,78 @@
+Metadata-Version: 2.4
+Name: st-persian-datepicker
+Version: 0.1.0
+Summary: Persian (Jalali) date picker component for Streamlit
+Author-email: Your Name <you@example.com>
+License: MIT
+Project-URL: Homepage, https://example.com/st-persian-datepicker
+Project-URL: Repository, https://example.com/your-repo
+Keywords: streamlit,jalali,persian,datepicker,component
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Framework :: Streamlit
+Classifier: Topic :: Software Development :: User Interfaces
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: streamlit>=1.25
+Dynamic: license-file
+
+# st-persian-datepicker
+
+یک کامپوننت ساده **تقویم جلالی (Persian DatePicker)** برای Streamlit.
+
+## نصب (نسخه محلی)
+
+فایل ZIP را از این گفتگو دانلود و سپس نصب کنید:
+
+```bash
+pip install st-persian-datepicker-0.1.0.zip
+```
+
+یا در حالت توسعه (داخل پوشه‌ی پروژه):
+
+```bash
+pip install -e .
+```
+
+## استفاده
+
+```python
+import streamlit as st
+from st_persian_datepicker import date_picker
+
+st.set_page_config(page_title="نمونه تقویم جلالی", layout="centered")
+
+st.header("انتخاب تاریخ (جلالی)")
+d = date_picker(
+    label="تاریخ تولد",
+    default="1403/07/05",
+    format="YYYY/MM/DD",
+    time_picker=False,
+    key="birthdate",
+)
+
+st.write("مقدار انتخاب‌شده:", d)
+```
+
+### محدودیت‌ها و نکات
+
+- برای `min_date` و `max_date`، عدد _Unix time (ms)_ بدهید (اختیاری). مثال پایتون:
+  ```python
+  import datetime as dt
+  min_ms = int(dt.datetime(2025, 1, 1).timestamp() * 1000)
+  max_ms = int(dt.datetime(2026, 1, 1).timestamp() * 1000)
+  date_picker(min_date=min_ms, max_date=max_ms)
+  ```
+- مقدار بازگشتی یک **رشته‌ی جلالی** طبق `format` است. اگر زمان فعال باشد، زمان در فیلد ورودی نمایش داده می‌شود اما خروجی رشته‌ی تاریخ است (می‌توانید در نسخه‌های بعدی خروجی را گسترش دهید).
+- برای توسعه فرانت‌اند پیشرفته‌تر، می‌توانید این HTML را با React/TypeScript جایگزین کنید.
+
+## توسعه
+
+- در `st_persian_datepicker/__init__.py` مقدار `_RELEASE` را `False` کنید و `url` را به dev server خود اشاره دهید.
+- در نسخه‌ی فعلی از CDN برای وابستگی‌ها (jQuery, persian-date, persian-datepicker) استفاده شده است.
+
+## مجوز
+
+MIT

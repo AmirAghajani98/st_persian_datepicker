@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10, 3.11, 3.12]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+
+      - name: Install build/test tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade build pytest
+
+      - name: Install package (editable)
+        working-directory: ./
+        run: |
+          # Install the package from the inner directory
+          python -m pip install -e ./st_persian_datepicker
+
+      - name: Run tests
+        working-directory: ./st_persian_datepicker
+        run: |
+          pytest -q
+
+      - name: Build sdist and wheel
+        working-directory: ./st_persian_datepicker
+        run: |
+          python -m build --sdist --wheel --outdir dist

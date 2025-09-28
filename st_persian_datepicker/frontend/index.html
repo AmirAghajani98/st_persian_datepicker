@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>st_persian_datepicker</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css"
+    />
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 8px 10px;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      label {
+        font-size: 14px;
+        color: #333;
+      }
+      input {
+        padding: 8px 10px;
+        font-size: 14px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .pdp-picker {
+        z-index: 9999;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <label id="lbl">انتخاب تاریخ</label>
+      <input id="inp" type="text" placeholder="تاریخ را انتخاب کنید…" />
+    </div>
+
+    <!-- Use the UMD build so the `Streamlit` global is available inside the iframe
+      (prevents `Unexpected token 'export'` when the ESM bundle is loaded via a
+      classic <script> tag). -->
+    <script src="https://unpkg.com/streamlit-component-lib@1.4.0/dist/index.umd.js"></script>
+    <!-- Provide a safe Streamlit global fallback for cases where the iframe
+         environment exposes Streamlit on the parent window instead of the
+         iframe window. This prevents `Streamlit is not defined` errors. -->
+    <script>
+      try {
+        if (
+          typeof Streamlit === "undefined" &&
+          window.parent &&
+          typeof window.parent.Streamlit !== "undefined"
+        ) {
+          window.Streamlit = window.parent.Streamlit;
+        }
+      } catch (e) {
+        // Accessing window.parent may be restricted in some sandboxed contexts.
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.js"></script>
+
+    <script>
+      let $inp = null;
+
+      function destroyIfAny() {
+        if ($inp) {
+          try {
+            // Some versions of the persian-datepicker plugin may store the
+            // instance under different data keys. Try common keys and call
+            // destroy() if present.
+            const keys = ["datepicker", "pDatepicker"];
+            for (const k of keys) {
+              try {
+                const data = $inp.data(k);
+                if (data && typeof data.destroy === "function") {
+                  data.destroy();
+                }
+              } catch (inner) {
+                // ignore individual key errors
+              }
+            }
+          } catch (e) {}
+        }
+      }
+
+      function mount(args) {
+        const lbl = document.getElementById("lbl");
+        const inp = document.getElementById("inp");
+        $inp = window.jQuery ? window.jQuery(inp) : null;
+
+        lbl.textContent = args.label || "انتخاب تاریخ";
+        inp.disabled = !!args.disabled;
+        inp.value = args.default || "";
+
+        // Inform Streamlit of the initial value (or null) so the Python side
+        // receives a value immediately.
+        try {
+          Streamlit.setComponentValue(inp.value || null);
+        } catch (e) {}
+
+        document.documentElement.setAttribute("dir", args.rtl ? "rtl" : "ltr");
+
+        destroyIfAny();
+
+        const opts = {
+          format: args.format || "YYYY/MM/DD",
+          autoClose: true,
+          initialValue: !!args.default,
+          persianDigit: true,
+          observer: true,
+          timePicker: { enabled: !!args.time_picker, second: false },
+          onSelect: function (unix) {
+            try {
+              const fmt = args.format || "YYYY/MM/DD";
+              const out = new persianDate(unix).format(fmt);
+              Streamlit.setComponentValue(out);
+            } catch (e) {
+              Streamlit.setComponentValue(inp.value);
+            }
+          },
+        };
+
+        if (typeof args.min_date === "number") opts.minDate = args.min_date;
+        if (typeof args.max_date === "number") opts.maxDate = args.max_date;
+
+        if ($inp && typeof $inp.persianDatepicker === "function") {
+          $inp.persianDatepicker(opts);
+        }
+
+        // Report manual edits/clears of the input back to Streamlit.
+        try {
+          inp.addEventListener("input", function () {
+            try {
+              Streamlit.setComponentValue(inp.value || null);
+            } catch (e) {
+              // ignore
+            }
+          });
+        } catch (e) {}
+
+        try {
+          Streamlit.setFrameHeight(document.documentElement.scrollHeight);
+        } catch (e) {}
+      }
+
+      function onRenderEventArgs(args) {
+        const a = args && args.args ? args.args : args || {};
+        mount(a);
+      }
+
+      // Diagnostic: log all messages posted to this iframe so the host page
+      // (Streamlit) message payloads can be inspected in the browser console.
+      window.addEventListener("message", function (ev) {
+        try {
+          // Keep console output concise but informative.
+          console.debug(
+            "[component message] origin=",
+            ev.origin,
+            "data=",
+            ev.data
+          );
+        } catch (e) {}
+
+        // Attempt to detect a Streamlit 'render' message. The exact shape of
+        // messages depends on the Streamlit frontend. This attempts common
+        // patterns used by the component lib.
+        try {
+          const d = ev.data || {};
+          // If the message contains a 'type' mentioning 'streamlit' and
+          // 'render', assume it carries args in d.args or d.payload.args.
+          if (typeof d === "object") {
+            const t = d.type || d.msg_type || d.event_type || "";
+            if (typeof t === "string" && t.toLowerCase().includes("render")) {
+              const possibleArgs =
+                d.args || (d.payload && d.payload.args) || d.message || d;
+              onRenderEventArgs(possibleArgs);
+            }
+          }
+        } catch (e) {}
+      });
+
+      window.addEventListener("load", function () {
+        // Prefer the Streamlit component lib if available. If it's not yet
+        // present (timing differences), poll for it for up to a few seconds
+        // and then register the event listener when found.
+        function registerStreamlit(s) {
+          try {
+            if (
+              !s ||
+              !s.events ||
+              typeof s.events.addEventListener !== "function"
+            )
+              return false;
+            s.events.addEventListener("render", function (event) {
+              try {
+                const args =
+                  event && event.detail && event.detail.args
+                    ? event.detail.args
+                    : {};
+                mount(args);
+              } catch (e) {}
+            });
+
+            try {
+              s.setComponentReady();
+            } catch (e) {}
+
+            try {
+              s.setFrameHeight(document.documentElement.scrollHeight);
+            } catch (e) {}
+
+            return true;
+          } catch (e) {
+            return false;
+          }
+        }
+
+        // Immediate attempt
+        if (typeof Streamlit !== "undefined") {
+          if (!registerStreamlit(Streamlit)) {
+            console.warn(
+              "Streamlit present but failed to register; will poll for parent Streamlit."
+            );
+          }
+        }
+
+        // Poll parent/window for Streamlit for up to ~5 seconds.
+        let attempts = 0;
+        const maxAttempts = 25; // 25 * 200ms = 5s
+        const poll = setInterval(function () {
+          attempts += 1;
+          let s = null;
+          try {
+            if (typeof Streamlit !== "undefined") s = Streamlit;
+          } catch (e) {}
+          try {
+            if (
+              !s &&
+              window.parent &&
+              typeof window.parent.Streamlit !== "undefined"
+            )
+              s = window.parent.Streamlit;
+          } catch (e) {}
+
+          if (s) {
+            window.Streamlit = s;
+            if (registerStreamlit(s)) {
+              clearInterval(poll);
+              return;
+            }
+          }
+
+          if (attempts >= maxAttempts) {
+            clearInterval(poll);
+            console.warn(
+              "Streamlit global not found after polling; falling back to window.postMessage listener for render events."
+            );
+          }
+        }, 200);
+      });
+    </script>
+  </body>
+</html>
