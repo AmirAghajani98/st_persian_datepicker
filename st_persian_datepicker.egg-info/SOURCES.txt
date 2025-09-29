@@ -9,3 +9,4 @@ st_persian_datepicker.egg-info/dependency_links.txt
 st_persian_datepicker.egg-info/requires.txt
 st_persian_datepicker.egg-info/top_level.txt
 st_persian_datepicker/frontend/index.html
+tests/test_import.py

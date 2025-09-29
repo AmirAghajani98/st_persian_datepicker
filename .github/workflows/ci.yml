@@ -38,15 +38,15 @@ jobs:
       - name: Install package (editable)
         working-directory: ./
         run: |
-          # Install the package from the inner directory
-          python -m pip install -e ./st_persian_datepicker
+          # Install the package in editable mode from repository root
+          python -m pip install -e .
 
       - name: Run tests
-        working-directory: ./st_persian_datepicker
+        working-directory: ./
         run: |
           pytest -q
 
       - name: Build sdist and wheel
-        working-directory: ./st_persian_datepicker
+        working-directory: ./
         run: |
           python -m build --sdist --wheel --outdir dist
