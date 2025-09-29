@@ -1,126 +1,154 @@
+````markdown
 # st-persian-datepicker
 
-یک کامپوننت ساده **تقویم جلالی (Persian DatePicker)** برای Streamlit.
+[![PyPI version](https://badge.fury.io/py/st-persian-datepicker.svg)](https://pypi.org/project/st-persian-datepicker/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/st-persian-datepicker.svg)](https://pypi.org/project/st-persian-datepicker/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## نصب (نسخه محلی)
+A simple **Jalali (Persian) DatePicker** component for [Streamlit](https://streamlit.io/).
 
-فایل ZIP را از این گفتگو دانلود و سپس نصب کنید:
+---
+
+## Installation
+
+From PyPI (after publishing):
+
+```bash
+pip install st-persian-datepicker
+```
+````
+
+Or locally (from a zip file):
 
 ```bash
 pip install st-persian-datepicker-0.1.0.zip
 ```
 
-یا در حالت توسعه (داخل پوشه‌ی پروژه):
+Or in development mode (inside the project folder):
 
 ```bash
 pip install -e .
 ```
 
-## استفاده
+---
+
+## Usage
 
 ```python
 import streamlit as st
 from st_persian_datepicker import date_picker
 
-st.set_page_config(page_title="نمونه تقویم جلالی", layout="centered")
+st.set_page_config(page_title="Jalali DatePicker Demo", layout="centered")
 
-st.header("انتخاب تاریخ (جلالی)")
+st.header("Select Date (Jalali)")
 d = date_picker(
-    label="تاریخ تولد",
+    label="Birthdate",
     default="1403/07/05",
     format="YYYY/MM/DD",
     time_picker=False,
     key="birthdate",
 )
 
-st.write("مقدار انتخاب‌شده:", d)
+st.write("Selected value:", d)
 ```
 
-### محدودیت‌ها و نکات
+---
 
-- برای `min_date` و `max_date`، عدد _Unix time (ms)_ بدهید (اختیاری). مثال پایتون:
+## Limitations & Notes
+
+- **Date range:** For `min_date` and `max_date`, pass values as _Unix time (ms)_. Example:
+
   ```python
   import datetime as dt
   min_ms = int(dt.datetime(2025, 1, 1).timestamp() * 1000)
   max_ms = int(dt.datetime(2026, 1, 1).timestamp() * 1000)
   date_picker(min_date=min_ms, max_date=max_ms)
   ```
-- مقدار بازگشتی یک **رشته‌ی جلالی** طبق `format` است. اگر زمان فعال باشد، زمان در فیلد ورودی نمایش داده می‌شود اما خروجی رشته‌ی تاریخ است (می‌توانید در نسخه‌های بعدی خروجی را گسترش دهید).
-- برای توسعه فرانت‌اند پیشرفته‌تر، می‌توانید این HTML را با React/TypeScript جایگزین کنید.
 
-## توسعه
+- **Return value:** Always a **Jalali date string** according to `format`.
+  If `time_picker=True`, the time is displayed in the input field, but the returned value remains a date string.
 
-- در `st_persian_datepicker/__init__.py` مقدار `_RELEASE` را `False` کنید و `url` را به dev server خود اشاره دهید.
-- در نسخه‌ی فعلی از CDN برای وابستگی‌ها (jQuery, persian-date, persian-datepicker) استفاده شده است.
+- **Frontend:** For more advanced frontend functionality, you may replace the bundled HTML/JS with a custom React/TypeScript implementation.
 
-## مجوز
+---
 
-MIT
+## Development
 
-## توزیع و انتشار (Publishing)
+- In `st_persian_datepicker/__init__.py`, set `_RELEASE = False` and point `url` to your dev server for local development.
+- The current version loads dependencies (jQuery, persian-date, persian-datepicker) from a CDN.
 
-این پروژه آمادهٔ بسته‌بندی و انتشار روی PyPI است. در این بخش یک مسیر ایمن و مرحله‌به‌مرحله برای ساخت و انتشار بسته روی TestPyPI (یا PyPI اصلی) آمده است.
+---
 
-پیش‌نیازها
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## Distribution & Publishing
+
+This project is ready to be packaged and published to [PyPI](https://pypi.org/).
+Follow the steps below to build and publish.
+
+### Prerequisites
 
 - Python 3.8+
-- یک virtualenv فعال (پیشنهاد می‌شود)
-- بسته‌های `build` و `twine` نصب‌شده در venv
+- A virtual environment (recommended)
+- `build` and `twine` installed
 
-ساخت توزیع‌ها
+### Build distributions
 
-1. فعال کردن virtualenv و نصب ابزارها (fish shell):
-
-```fish
+```bash
 cd /path/to/st_persian_datepicker
 python3 -m venv .venv
-. .venv/bin/activate.fish
+source .venv/bin/activate
 python3 -m pip install --upgrade pip build twine
-```
 
-2. ساخت sdist و wheel:
-
-```fish
-cd st_persian_datepicker
 python -m build
-# یا برای خروجی در پوشهٔ مشخص:
-# python -m build --sdist --wheel --outdir dist
 ```
 
-تست روی TestPyPI
+This will create `dist/*.tar.gz` and `dist/*.whl`.
 
-1. ایجاد حساب روی https://test.pypi.org/ و دریافت API token (recommended) یا استفاده از نام‌کاربری/رمز.
-2. آپلود به TestPyPI (نکته: استفاده از API token امن‌تر است):
+### Upload to TestPyPI
 
-```fish
-# اگر از API token استفاده می‌کنید:
-export TWINE_USERNAME='__token__'
-export TWINE_PASSWORD='pypi-AgENd...'
+1. Create an account at [TestPyPI](https://test.pypi.org/).
+2. Obtain an API token (recommended).
+3. Upload:
+
+```bash
+export TWINE_USERNAME="__token__"
+export TWINE_PASSWORD="pypi-AgENd..."
 python -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-
-# یا با نام‌کاربری و رمز:
-# python -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 ```
 
-بررسی نصب از TestPyPI
+### Install from TestPyPI
 
-```fish
-python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps st-persian-datepicker
+```bash
+pip install --index-url https://test.pypi.org/simple/ --no-deps st-persian-datepicker
 ```
 
-انتشار به PyPI
+### Upload to PyPI
 
-1. دریافت API token از https://pypi.org/ (Projects -> Your account -> API tokens).
-2. آپلود به PyPI:
+1. Create an API token from [PyPI](https://pypi.org/).
+2. Upload:
 
-```fish
-export TWINE_USERNAME='__token__'
-export TWINE_PASSWORD='pypi-AgENd...'
+```bash
+export TWINE_USERNAME="__token__"
+export TWINE_PASSWORD="pypi-AgENd..."
 python -m twine upload dist/*
 ```
 
-خودکارسازی
+---
 
-برای راحتی تست، یک اسکریپت نمونه برای انتشار به TestPyPI در `scripts/publish_to_testpypi.sh` قرار داده شده است. این اسکریپت از متغیرهای محیطی `TWINE_USERNAME` و `TWINE_PASSWORD` استفاده می‌کند و فایل‌های توزیع را در `dist/` می‌سازد و آپلود می‌کند.
+## CI/CD & Automation
 
-احتیاط امنیتی: هیچ توکنی یا رمز عبوری را در کد منبع ذخیره نکنید؛ از متغیرهای محیطی یا سرویس CI (مثل GitHub Actions Secrets) استفاده کنید.
+- A sample script is provided in `scripts/publish_to_testpypi.sh`.
+- Never commit API tokens. Use environment variables or CI secrets (e.g. GitHub Actions Secrets).
+
+---
+
+## Roadmap
+
+- [ ] Return datetime object instead of string
+- [ ] Add built-in time picker support in output
+- [ ] Replace jQuery dependencies with native React/TypeScript implementation
