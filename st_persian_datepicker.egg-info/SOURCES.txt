@@ -1,0 +1,12 @@
+LICENSE
+MANIFEST.in
+README.md
+pyproject.toml
+st_persian_datepicker/__init__.py
+st_persian_datepicker.egg-info/PKG-INFO
+st_persian_datepicker.egg-info/SOURCES.txt
+st_persian_datepicker.egg-info/dependency_links.txt
+st_persian_datepicker.egg-info/requires.txt
+st_persian_datepicker.egg-info/top_level.txt
+st_persian_datepicker/frontend/index.html
+tests/test_import.py

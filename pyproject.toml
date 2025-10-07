@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "st-persian-datepicker"
+version = "0.1.0"
+description = "Persian (Jalali) date picker component for Streamlit"
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [{name = "Your Name", email = "you@example.com"}]
+keywords = ["streamlit", "jalali", "persian", "datepicker", "component"]
+urls = {"Homepage" = "https://example.com/st-persian-datepicker", "Repository" = "https://example.com/your-repo"}
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Framework :: Streamlit",
+  "Topic :: Software Development :: User Interfaces"
+]
+dependencies = [
+  "streamlit>=1.25",
+  # jdatetime is required for converting between Gregorian and Jalali dates.  It
+  # provides `fromgregorian` and `togregorian` methods as well as strptime
+  # functionality【251735903543695†L109-L117】.  Without this dependency the
+  # optional output modes "jalali" and "gregorian" will not be available.
+  "jdatetime>=5.0.0",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["st_persian_datepicker"]
+
+[tool.setuptools.package-data]
+st_persian_datepicker = ["frontend/*"]

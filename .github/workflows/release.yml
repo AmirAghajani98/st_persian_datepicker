@@ -1,0 +1,48 @@
+name: Publish Python Package
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.12]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip build twine
+
+      - name: Build sdist and wheel
+        working-directory: ./st_persian_datepicker
+        run: |
+          python -m build --sdist --wheel --outdir dist
+
+      - name: Publish to TestPyPI
+        env:
+          TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
+        working-directory: ./st_persian_datepicker
+        run: |
+          python -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+      - name: Publish to PyPI (only on v* tags)
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        working-directory: ./st_persian_datepicker
+        run: |
+          python -m twine upload dist/*
