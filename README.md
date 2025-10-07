@@ -1,4 +1,3 @@
-````markdown
 # st-persian-datepicker
 
 [![PyPI version](https://badge.fury.io/py/st-persian-datepicker.svg)](https://pypi.org/project/st-persian-datepicker/)
@@ -16,7 +15,6 @@ From PyPI (after publishing):
 ```bash
 pip install st-persian-datepicker
 ```
-````
 
 Or locally (from a zip file):
 
@@ -171,4 +169,4 @@ python -m twine upload dist/*
 ```
 
 
-```
+
