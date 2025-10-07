@@ -76,11 +76,11 @@ st.write("Selected value:", d)
   date_picker(min_date=min_ms, max_date=max_ms)
   ```
 
-* **Return value:** The returned type depends on the ``output`` parameter.  By default
+* **Return value:** The returned type depends on the `output` parameter. By default
   (`output="str"`) the component returns a **Jalali date string** according to
-  `format`.  With `output="jalali"` a ``jdatetime.date`` or ``jdatetime.datetime`` is
-  returned, and with `output="gregorian"` a ``datetime.date`` or ``datetime.datetime``
-  in the Gregorian calendar is returned.  If `time_picker=True`, the time portion is
+  `format`. With `output="jalali"` a `jdatetime.date` or `jdatetime.datetime` is
+  returned, and with `output="gregorian"` a `datetime.date` or `datetime.datetime`
+  in the Gregorian calendar is returned. If `time_picker=True`, the time portion is
   included in the returned object (except when returning a simple date string).
 
 - **Frontend:** For more advanced frontend functionality, you may replace the bundled HTML/JS with a custom React/TypeScript implementation.
@@ -167,3 +167,8 @@ python -m twine upload dist/*
 - [ ] Return datetime object instead of string
 - [ ] Add built-in time picker support in output
 - [ ] Replace jQuery dependencies with native React/TypeScript implementation
+
+```
+
+
+```
