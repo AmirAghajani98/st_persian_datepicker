@@ -1,0 +1,33 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+*.so
+*.dylib
+*.egg
+*.egg-info
+dist
+build
+eggs
+*.tgz
+*.zip
+*.tar.gz
+
+# Virtual Environment
+.venv/
+env/
+venv/
+
+# Editor & IDE settings
+.vscode/
+.idea/
+
+# pytest cache
+.pytest_cache/
+
+# pyenv
+.python-version
+
+# Jupyter Notebook
+.ipynb_checkpoints/
